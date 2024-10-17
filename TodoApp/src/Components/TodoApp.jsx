@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Todolist from "./Todolist";
 import { v4 as uuidv4 } from "uuid";
 export default function TodoApp() {
@@ -15,6 +15,7 @@ export default function TodoApp() {
       setTodo([
         ...todos,
         {
+          id: uuidv4(),
           todo: inputValue,
           status: false,
         },
@@ -32,8 +33,31 @@ export default function TodoApp() {
     setTodo(newTodos);
   };
 
+  // edite mode
+  const editHanle = (todo, newTitleTodo) => {
+    let newTodo = todos.map((todoItem) => {
+      if (todo.id === todoItem.id) {
+        todo.todo = newTitleTodo;
+      }
+      return todoItem;
+    });
+    setTodo(newTodo);
+  };
+
+  useEffect(() => {
+    setTodo(JSON.parse(localStorage.getItem("todo_lists")) ?? []);
+  }, []);
+  useEffect(() => {
+    localStorage.setItem("todo_lists", JSON.stringify(todos));
+  }, [todos]);
+  const deleteTodoHandler = (todo) => {
+    let newTodos = todos.filter((todoItem) => {
+      return todo.id !== todoItem.id;
+    });
+    setTodo(newTodos);
+  };
   return (
-    <div className="flex flex-col justify-center items-center mx-auto h-auto mt-16 w-[25vw]">
+    <div className="flex flex-col justify-center items-center mx-auto h-auto mt-16 w-[80vw] laptop:w-[80vw] tablet:w-[90vw]  text-2xl laptop:text-5xl tablet:text-4xl">
       <div className="w-full flex justify-center items-center mb-10">
         <div className="flex items-center mt-1 w-full ">
           <input
@@ -41,18 +65,22 @@ export default function TodoApp() {
             type="text"
             onKeyDown={handleSubmit}
             onChange={handleInputChange}
-            className=" bg-stone-200 w-full h-10 px-3 text-sm text-blue-500 border border-r-0 rounded-r-none focus:outline-none rounded shadow-sm"
+            className=" bg-stone-200 w-full h-10 px-3 text-2xl text-blue-500 border border-r-0 rounded-r-none  focus:outline-none rounded shadow-sm"
             placeholder="Add new TODO"
           />
           <button
-            className="h-10 px-4 text-sm bg-blue-500 border border-l-0 border-blue-500 rounded-r shadow-sm text-blue-50 
+            className="h-10 px-4 text-2xl bg-blue-500 border border-l-0 border-blue-500 rounded-r shadow-sm text-blue-50 
   uppercase hover:text-white hover:bg-blue-400 hover:border-blue-400 focus:outline-none"
           >
             add
           </button>
         </div>
       </div>
-      <Todolist todos={todos} toggleTodoStatuse={toggleTodoStatuse} />
+      <Todolist
+        todos={todos}
+        toggleTodoStatuse={toggleTodoStatuse}
+        editHanle={editHanle}
+      />
     </div>
   );
 }

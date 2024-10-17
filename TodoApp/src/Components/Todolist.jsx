@@ -2,7 +2,7 @@
 // eslint-disable-next-line react/prop-types
 import TodoItem from "./TodoItem";
 
-export default function Todolist({ todos, toggleTodoStatuse }) {
+export default function Todolist({ todos, toggleTodoStatuse, editHanle }) {
   // console.log(todos);
   return (
     <div className=" flex justify-center mx-auto w-full bg-zinc-300 py-5 rounded-lg">
@@ -12,6 +12,7 @@ export default function Todolist({ todos, toggleTodoStatuse }) {
             todo={todo}
             key={index}
             toggleTodoStatuse={toggleTodoStatuse}
+            editHanle={editHanle}
           />
         ))}
       </ul>
