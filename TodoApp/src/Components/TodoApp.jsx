@@ -44,12 +44,14 @@ export default function TodoApp() {
     setTodo(newTodo);
   };
 
-  useEffect(() => {
-    setTodo(JSON.parse(localStorage.getItem("todo_lists")) ?? []);
-  }, []);
-  useEffect(() => {
-    localStorage.setItem("todo_lists", JSON.stringify(todos));
-  }, [todos]);
+  // useEffect(() => {
+  //   setTodo(JSON.parse(localStorage.getItem("todo_lists")) ?? []);
+  // }, []);
+  // useEffect(() => {
+  //   localStorage.setItem("todo_lists", JSON.stringify(todos));
+  // }, [todos]);
+
+  //! DELETE handler
   const deleteTodoHandler = (todo) => {
     let newTodos = todos.filter((todoItem) => {
       return todo.id !== todoItem.id;
@@ -57,20 +59,20 @@ export default function TodoApp() {
     setTodo(newTodos);
   };
   return (
-    <div className="flex flex-col justify-center items-center mx-auto h-auto mt-16 w-[80vw] laptop:w-[80vw] tablet:w-[90vw]  text-2xl laptop:text-5xl tablet:text-4xl">
-      <div className="w-full flex justify-center items-center mb-10">
+    <div className="flex flex-col justify-center items-center mx-auto h-auto mt-16 w-[80vw] laptop:w-[25vw]  tablet:w-[90vw]  text-2xl laptop:text-base tablet:text-4xl">
+      <div className="w-full flex justify-center items-center mb-10 ">
         <div className="flex items-center mt-1 w-full ">
           <input
             value={inputValue}
             type="text"
             onKeyDown={handleSubmit}
             onChange={handleInputChange}
-            className=" bg-stone-200 w-full h-10 px-3 text-2xl text-blue-500 border border-r-0 rounded-r-none  focus:outline-none rounded shadow-sm"
+            className=" bg-stone-200 w-full h-10 px-3 text-2xl text-blue-500 border border-r-0 rounded-r-none  focus:outline-none rounded shadow-sm laptop:text-base"
             placeholder="Add new TODO"
           />
           <button
             className="h-10 px-4 text-2xl bg-blue-500 border border-l-0 border-blue-500 rounded-r shadow-sm text-blue-50 
-  uppercase hover:text-white hover:bg-blue-400 hover:border-blue-400 focus:outline-none"
+  uppercase hover:text-white hover:bg-blue-400 hover:border-blue-400 focus:outline-none laptop:text-base"
           >
             add
           </button>
@@ -80,6 +82,7 @@ export default function TodoApp() {
         todos={todos}
         toggleTodoStatuse={toggleTodoStatuse}
         editHanle={editHanle}
+        deleteTodoHandler={deleteTodoHandler}
       />
     </div>
   );
