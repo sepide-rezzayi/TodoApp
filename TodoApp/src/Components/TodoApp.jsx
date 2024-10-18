@@ -1,5 +1,8 @@
 /* eslint-disable no-unused-vars */
 
+// API :
+// https://6710a717a85f4164ef2eab32.mockapi.io/GitHubtodo
+
 import { useEffect, useState } from "react";
 import Todolist from "./Todolist";
 import { v4 as uuidv4 } from "uuid";
@@ -10,53 +13,119 @@ export default function TodoApp() {
   const handleInputChange = (event) => {
     setInputValue(event.target.value);
   };
-  const handleSubmit = (e) => {
+
+  //**  set a new todo**/
+
+  const handleSubmit = async (e) => {
     if (e.key === "Enter") {
-      setTodo([
-        ...todos,
+      const newtask = {
+        todo: inputValue,
+        status: false,
+      };
+      let res = await fetch(
+        "https://6710a717a85f4164ef2eab32.mockapi.io/GitHubtodo",
         {
-          id: uuidv4(),
-          todo: inputValue,
-          status: false,
-        },
-      ]);
-      setInputValue("");
+          method: "post",
+          headers: { "content-type": "application/json" },
+          // Send your data in the request body as JSON
+          body: JSON.stringify(newtask),
+        }
+      );
+      if (res.ok) {
+        setTodo([
+          ...todos,
+          {
+            id: uuidv4(),
+            todo: inputValue,
+            status: false,
+          },
+        ]);
+        setInputValue("");
+      }
     }
   };
-  const toggleTodoStatuse = (todo) => {
-    let newTodos = todos.map((todoItem) => {
-      if (todo.id == todoItem.id) {
-        todo.status = !todoItem.status;
+
+  //? Stasus Changer
+  const toggleTodoStatuse = async (todo) => {
+    let res = await fetch(
+      `https://6710a717a85f4164ef2eab32.mockapi.io/GitHubtodo/${todo.id}`,
+      {
+        method: "PUT",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          status: !todo.status,
+        }),
       }
-      return todoItem;
-    });
-    setTodo(newTodos);
+    );
+    if (res.ok) {
+      let newTodos = todos.map((todoItem) => {
+        if (todo.id == todoItem.id) {
+          todo.status = !todoItem.status;
+        }
+        return todoItem;
+      });
+      setTodo(newTodos);
+    }
   };
 
   // edite mode
-  const editHanle = (todo, newTitleTodo) => {
-    let newTodo = todos.map((todoItem) => {
-      if (todo.id === todoItem.id) {
-        todo.todo = newTitleTodo;
+  const editHanle = async (todo, newTitleTodo) => {
+    let res = await fetch(
+      `https://6710a717a85f4164ef2eab32.mockapi.io/GitHubtodo/${todo.id}`,
+      {
+        method: "PUT",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          todo: newTitleTodo,
+        }),
       }
-      return todoItem;
-    });
-    setTodo(newTodo);
+    );
+    if (res.ok) {
+      let newTodo = todos.map((todoItem) => {
+        if (todo.id === todoItem.id) {
+          todo.todo = newTitleTodo;
+        }
+        return todoItem;
+      });
+      setTodo(newTodo);
+    }
   };
 
-  // useEffect(() => {
-  //   setTodo(JSON.parse(localStorage.getItem("todo_lists")) ?? []);
-  // }, []);
+  // ** get data from API
+  const getDataFromAPI = async () => {
+    let res = await fetch(
+      "https://6710a717a85f4164ef2eab32.mockapi.io/GitHubtodo",
+      {
+        method: "GET",
+        headers: { "content-type": "application/json" },
+      }
+    );
+    if (res.ok) {
+      setTodo(await res.json());
+    }
+  };
+  useEffect(() => {
+    getDataFromAPI();
+    // setTodo(JSON.parse(localStorage.getItem("todo_lists")) ?? []);
+  }, [todos]);
   // useEffect(() => {
   //   localStorage.setItem("todo_lists", JSON.stringify(todos));
   // }, [todos]);
 
   //! DELETE handler
-  const deleteTodoHandler = (todo) => {
-    let newTodos = todos.filter((todoItem) => {
-      return todo.id !== todoItem.id;
-    });
-    setTodo(newTodos);
+  const deleteTodoHandler = async (todo) => {
+    let res = await fetch(
+      `https://6710a717a85f4164ef2eab32.mockapi.io/GitHubtodo/${todo.id}`,
+      {
+        method: "DELETE",
+      }
+    );
+    if (res.ok) {
+      let newTodos = todos.filter((todoItem) => {
+        return todo.id !== todoItem.id;
+      });
+      setTodo(newTodos);
+    }
   };
   return (
     <div className="flex flex-col justify-center items-center mx-auto h-auto mt-16 w-[80vw] laptop:w-[25vw]  tablet:w-[90vw]  text-2xl laptop:text-base tablet:text-4xl">
